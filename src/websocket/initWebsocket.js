@@ -14,27 +14,30 @@ export default function initWebsocket() {
       let msg = null
       try {
         msg = JSON.parse(e.data)
-
-        /* if (json.length) {
-          console.log(`json`, [json[0], ...json[1]]);
-          setBids([json[0], ...json[1]]);
-        } */
       } catch (e) {
         console.log(`Error parsing : ${e.data}`);
       }
       
+      if (!msg.length) { 
+        console.log('event: info/subscribed', msg)
+        return
+      }
+
+      let [/* channel */, data] = msg
+
       switch (true) {
-        case !msg.length:
-          console.log('event: info/subscribed', msg);
-          break;
-        case msg[1].length === 50:
-          console.log('bundle', msg[1]);
-          break;
-        case msg[1] === 'hb':
-          console.log('hb', msg[1]);
+        case data.length === 50:
+          console.log('bundle', data);
+          return emitter( { type: 'fillIn', payload: data } )          
+          // break;
+        case data === 'hb':
+          // console.log('hb', msg[1]);
           break;
         default:
-          // console.log('msg', msg[0], msg[1])
+          let [price, count, amount] = data
+          let style = 'color: cyan'
+          if (amount < 0) style = 'color: pink'
+          // console.log(`%c price ${price}, count ${count}, amount ${amount}`, style)
       }
 
       // return emitter( { type: 'ACTION_TYPE', payload } )
