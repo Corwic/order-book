@@ -17,11 +17,13 @@ const bookReducer = createReducer(initialState, (builder) => {
     })
     .addCase(addOne, (state, action) => {
       const line = action.payload
-      checkIdBidsOrAsks(
+      fnOnBidsOrAsks(
         line, 
-        () => state.bids = [...state.bids, line],
-        () => state.asks = [...state.asks, line]
+        data => state.bids = [...state.bids, data],
+        data => state.asks = [...state.asks, data]
       )
+      /* () => state.bids = [...state.bids, line],
+      () => state.asks = [...state.asks, line] */
     })
 })
 
@@ -31,7 +33,7 @@ export default bookReducer
 function splitBidsAsks(data) {
   const bids = [], asks = []
   for (let line of data) {
-    checkIdBidsOrAsks(
+    fnOnBidsOrAsks(
       line, 
       data => bids.push(data), 
       data => asks.push(data)
@@ -40,10 +42,10 @@ function splitBidsAsks(data) {
   return [bids, asks]
 }
 
-function checkIdBidsOrAsks(line, fnBids, fnAsks) {
+function fnOnBidsOrAsks(line, fnBids, fnAsks) {
   const [price, count, amount] = line
-  if (amount > 0) fnBids(line)
-  else fnAsks([price, count, amount * -1])
+  if (amount > 0) fnBids([price / 1000, count, amount])
+  else fnAsks([price / 1000, count, amount * -1])
 }
 
 /* import { createSlice } from '@reduxjs/toolkit'

@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100%;
 }
 
 code {
@@ -12,9 +13,47 @@ code {
     monospace;
 }
 
-.bidRow {
+html, body {
+  height: 100%;
+}
+#root {
+  background-color: #282c34;
+  font-size: .7rem;
+  width: 100%;
+  height: 100%;
+}
+
+.bookTable {
+  display: flex;
+  width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+@media screen and (max-width: 640px) {
+  .bookTable {
+    flex-direction: column;
+  }  
+  .bookTableHalf.asks > .bookRow.header {
+    display: none;
+  }
+}
+
+.bookTableHalf {
+  flex-grow: 1;
+}
+.bookTableHalf.bids{
+  color: seagreen;
+}
+.bookTableHalf.asks{
+  color: coral;
+}
+
+.bookRow {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   text-align: right;
   width: 100%;
+}
+.bookRow.header {
+  font-weight: bold;
 }
