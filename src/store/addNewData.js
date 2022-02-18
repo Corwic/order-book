@@ -1,3 +1,5 @@
+import { current } from "@reduxjs/toolkit";
+
 export default function addNewData(newOrder, state) {
   const [newPrice, newCount, newAmount] = newOrder;
   const [ bookMap, bidsArr, asksArr, depth ] = state;
@@ -27,11 +29,10 @@ export default function addNewData(newOrder, state) {
 
   // there's the price in the book
   changeOrderWithThePrice(newOrder, samePriceInBook, state);
-  //console.log(bookMap, bidsArr, asksArr);
 }
 
 function changeOrderWithThePrice(newOrder, samePriceInBook, state) {
-  const [price, newCount, newAmount] = newOrder;
+  const [price, newCount, newAmount, newTotal] = newOrder;
   const [bookCount, bookAmount] = samePriceInBook;
   const [ bookMap, bidsArr, asksArr, ] = state;
 
@@ -45,9 +46,12 @@ function changeOrderWithThePrice(newOrder, samePriceInBook, state) {
   if (amountRes === 0 || countRes === 0) {
   //   delete bookMap[price];
   //   const index = findPriceAndDelete(price, orderList);
-    console.log(`- Amount: ${amountRes}, Count: ${countRes}`);
+    console.log(`- counted Amount: ${amountRes}, counted Count: ${countRes}`);
+    console.log(`- new: ${price, newCount, newAmount, newTotal}`)
+    console.log(`- book: ${price, bookCount, bookAmount, bookTotal}`)
     const ba = isBidOrAsk(bookAmount, 'bids', 'asks');
     console.log(`- ${price} is deleted from ${ba} at ${index}`);
+    
   //   console.log('arr', bidsArr.length, asksArr.length);
     return;
   }
@@ -56,22 +60,48 @@ function changeOrderWithThePrice(newOrder, samePriceInBook, state) {
 }
 
 function addNewPriceToBook(newOrder, state) {
-  const [newPrice, , newAmount] = newOrder;
-  const [ bookMap, bidsArr, asksArr, depth ] = state;
+  const [newPrice, newCount, newAmount] = newOrder;
+  const [bookMap, bidsArr, asksArr, depth] = state;
 
   const orderList = isBidOrAsk(newAmount, bidsArr, asksArr);
+  const desiredIndex = findIndexForNewOrder(newPrice, newAmount, orderList)
+  const newTotal = countNewTotal(orderList, bookMap, desiredIndex, newAmount)
+
+  orderList.splice(desiredIndex, 0, newPrice);
+  bookMap[newPrice] = [newCount, newAmount, newTotal]
+  delExtraOrders(orderList, bookMap, depth);
+  reCountTotals(orderList, desiredIndex, newTotal)
+
+  return desiredIndex;
+}
+
+function countNewTotal(orderList, bookMap, desiredIndex, newAmount){
+  const prevOrderPrice = orderList[desiredIndex - 1]
+  console.log(`Looking for a prev order total from string ${desiredIndex - 1}`, current(bookMap[prevOrderPrice]));
+  const prevTotal = bookMap[prevOrderPrice][2]
+  return prevTotal + newAmount
+}
+
+function reCountTotals(orderList, desiredIndex, total) {
+  let newTotal = total
+  for (let i = desiredIndex + 1; i < orderList.length; i++) {
+    const currentOrder = bookMap[orderList[i]]
+    const [,amount,] = currentOrder
+    newTotal += amount
+    currentOrder[2] = newTotal
+  }
+}
+
+function findIndexForNewOrder(newPrice, newAmount, orderList) {
   const condition = (currPrice) =>
     isBidOrAsk(newAmount, newPrice > currPrice, newPrice < currPrice);
 
   let desiredIndex;
-  for (let i = depth - 1; i >= 0; i--) {
+  for (let i = orderList.length - 1; i >= 0; i--) {
     if (condition(orderList[i])) desiredIndex = i;
   }
 
-  orderList.splice(desiredIndex, 0, newPrice);
-  delExtraOrders(orderList, bookMap, depth);
-
-  return desiredIndex;
+  return desiredIndex
 }
 
 function delExtraOrders(orderList, bookMap, depth) {

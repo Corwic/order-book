@@ -15,14 +15,30 @@ const initialState = {
 const bookReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(fillIn, (state, action) => {
-      const orders = action.payload
-      orders.forEach((order, i) => {
-        const [price, count, amount] = order
-        const orderList = isBidOrAsk(amount, state.bids, state.asks)
+      const orders = action.payload 
+      const ordersLength = orders.length
+      let i = 0, bidTotal = 0, askTotal = 0
+      // orders.forEach((order, i) => {
+      //   const [price, count, amount] = order
+      //   const orderList = isBidOrAsk(amount, state.bids, state.asks)
+      //   state.bookMap[price] = [count, amount]
+      //   orderList.push(pomerice)
+      // })
+      while (i < (ordersLength / 2)) {
+        const [bidPrice, bidCount, bidAmount] = orders[i]
+        const [askPrice, askCount, askAmount] = orders[ordersLength - 1 - i]
 
-        state.bookMap[price] = [count, amount]
-        orderList.push(price)
-      })
+        bidTotal += bidAmount
+        askTotal += askAmount          
+
+        state.bookMap[bidPrice] = [bidCount, bidAmount, bidTotal]
+        state.bookMap[askPrice] = [askCount, askAmount, askTotal]
+        state.bids.push(bidPrice)
+        state.asks.push(askPrice)
+        i++;
+      }
+        
+      
     })
     .addCase(addOne, (state, action) => {
       const order = action.payload

@@ -27,9 +27,8 @@ export default function initWebsocket() {
 
       switch (true) {
         case data.length === 50:
-          // console.log('bundle', data);
           return emitter( { type: 'fillIn', payload: data } )          
-          // break;
+          break;
         case data === 'hb':
           // console.log('hb', msg[1]);
           break;
