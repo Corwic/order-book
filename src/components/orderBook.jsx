@@ -59,7 +59,10 @@ function ListOrders({data, bookMap, side}) {
   // const isThereData = arr => arr.length ? (...arr) : [0,0,0]
   
   return data.map((orderPrice, index) => {
-    if (!bookMap[orderPrice]) debugger;
+    // if (!bookMap[orderPrice]) {
+    //   console.log('check the added or removed orders');
+    //   debugger;
+    // }
     return <OrderRow 
           key={(orderPrice.toString() || 0) + index} 
           price={orderPrice || 0}
@@ -72,16 +75,23 @@ function ListOrders({data, bookMap, side}) {
 }
 
 function OrderRow({price, count, amount, total, addClass = '', side}) {
-  if (isFinite(price)) price = price / 1000
-  if (isFinite(amount) && amount < 0) amount = -amount
+  if (isFinite(price)) {
+    price = (price / 1000).toFixed(3)
+    if (amount < 0) {
+      amount = -amount
+      total = -total
+    }
+    amount = amount.toFixed(4)
+    total = total ? total.toFixed(4) : 0
+  }
 
-  const res = side === 'bids' 
+  const data = side === 'bids' 
     ? [price, count, amount, total].reverse() 
     : [price, count, amount, total]
 
   return (
     <div className={`bookRow ${addClass}`}>
-      {res.map(value => <div>{value}</div>)}
+      {data.map(value => <div>{value}</div>)}
     </div>
   )
 }
