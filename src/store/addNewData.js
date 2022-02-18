@@ -1,5 +1,30 @@
 import { current } from "@reduxjs/toolkit";
 
+export function organizeInitialData(orders) {
+  const ordersLength = orders.length
+  const bookMap = {}, 
+        bids = [], 
+        asks = []
+  let i = 0, 
+      bidTotal = 0, 
+      askTotal = 0
+
+  while (i < (ordersLength / 2)) {
+    const [bidPrice, bidCount, bidAmount] = orders[i]
+    const [askPrice, askCount, askAmount] = orders[ordersLength - 1 - i]
+
+    bidTotal += bidAmount
+    askTotal += askAmount          
+
+    bookMap[bidPrice] = [bidCount, bidAmount, bidTotal]
+    bookMap[askPrice] = [askCount, askAmount, askTotal]
+    bids.push(bidPrice)
+    asks.push(askPrice)
+    i++;
+  }
+  return {bookMap, bids, asks}
+}
+
 export default function addNewData(newOrder, state) {
   const [newPrice, newCount, newAmount] = newOrder;
   const [ bookMap, bidsArr, asksArr, depth ] = state;
@@ -76,8 +101,9 @@ export function addNewPriceToBook(newOrder, state) {
 }
 
 export function countNewTotal(orderList, bookMap, desiredIndex, newAmount){
+  if (desiredIndex === 0) return newAmount
+
   const prevOrderPrice = orderList[desiredIndex - 1]
-  console.log(`Looking for a prev order total from string ${desiredIndex - 1}`, current(bookMap[prevOrderPrice]));
   const prevTotal = bookMap[prevOrderPrice][2]
   return prevTotal + newAmount
 }

@@ -1,6 +1,9 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 // import fillInWithData from './fiilInWithData'
-import addNewData, {isBidOrAsk} from './addNewData'
+import addNewData, {
+  organizeInitialData,
+  isBidOrAsk
+} from './addNewData'
 
 export const fillIn = createAction('fillIn')
 export const addOne = createAction('addOne')
@@ -15,30 +18,10 @@ const initialState = {
 const bookReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(fillIn, (state, action) => {
-      const orders = action.payload 
-      const ordersLength = orders.length
-      let i = 0, bidTotal = 0, askTotal = 0
-      // orders.forEach((order, i) => {
-      //   const [price, count, amount] = order
-      //   const orderList = isBidOrAsk(amount, state.bids, state.asks)
-      //   state.bookMap[price] = [count, amount]
-      //   orderList.push(pomerice)
-      // })
-      while (i < (ordersLength / 2)) {
-        const [bidPrice, bidCount, bidAmount] = orders[i]
-        const [askPrice, askCount, askAmount] = orders[ordersLength - 1 - i]
-
-        bidTotal += bidAmount
-        askTotal += askAmount          
-
-        state.bookMap[bidPrice] = [bidCount, bidAmount, bidTotal]
-        state.bookMap[askPrice] = [askCount, askAmount, askTotal]
-        state.bids.push(bidPrice)
-        state.asks.push(askPrice)
-        i++;
-      }
-        
-      
+      const { bookMap, bids, asks } = organizeInitialData(action.payload)
+      state.bookMap = {...bookMap}
+      state.bids.push(...bids)
+      state.asks.push(...asks)
     })
     .addCase(addOne, (state, action) => {
       const order = action.payload
