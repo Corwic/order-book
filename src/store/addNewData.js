@@ -31,7 +31,7 @@ export default function addNewData(newOrder, state) {
   changeOrderWithThePrice(newOrder, samePriceInBook, state);
 }
 
-function changeOrderWithThePrice(newOrder, samePriceInBook, state) {
+export function changeOrderWithThePrice(newOrder, samePriceInBook, state) {
   const [price, newCount, newAmount, newTotal] = newOrder;
   const [bookCount, bookAmount] = samePriceInBook;
   const [ bookMap, bidsArr, asksArr, ] = state;
@@ -59,7 +59,7 @@ function changeOrderWithThePrice(newOrder, samePriceInBook, state) {
   bookMap[price] = [countRes, amountRes];
 }
 
-function addNewPriceToBook(newOrder, state) {
+export function addNewPriceToBook(newOrder, state) {
   const [newPrice, newCount, newAmount] = newOrder;
   const [bookMap, bidsArr, asksArr, depth] = state;
 
@@ -75,14 +75,14 @@ function addNewPriceToBook(newOrder, state) {
   return desiredIndex;
 }
 
-function countNewTotal(orderList, bookMap, desiredIndex, newAmount){
+export function countNewTotal(orderList, bookMap, desiredIndex, newAmount){
   const prevOrderPrice = orderList[desiredIndex - 1]
   console.log(`Looking for a prev order total from string ${desiredIndex - 1}`, current(bookMap[prevOrderPrice]));
   const prevTotal = bookMap[prevOrderPrice][2]
   return prevTotal + newAmount
 }
 
-function reCountTotals(orderList, desiredIndex, total) {
+export function reCountTotals(orderList, desiredIndex, total) {
   let newTotal = total
   for (let i = desiredIndex + 1; i < orderList.length; i++) {
     const currentOrder = bookMap[orderList[i]]
@@ -92,7 +92,7 @@ function reCountTotals(orderList, desiredIndex, total) {
   }
 }
 
-function findIndexForNewOrder(newPrice, newAmount, orderList) {
+export function findIndexForNewOrder(newPrice, newAmount, orderList) {
   const condition = (currPrice) =>
     isBidOrAsk(newAmount, newPrice > currPrice, newPrice < currPrice);
 
@@ -104,14 +104,14 @@ function findIndexForNewOrder(newPrice, newAmount, orderList) {
   return desiredIndex
 }
 
-function delExtraOrders(orderList, bookMap, depth) {
+export function delExtraOrders(orderList, bookMap, depth) {
   const limit = depth + 5;
   if (orderList.length < limit) return;
   delete bookMap[orderList[depth]];
   orderList.pop();
 }
 
-function findPriceAndDelete(price, arr) {
+export function findPriceAndDelete(price, arr) {
   const i = arr.indexOf(price);
   arr.splice(i, 1);
   return i;
