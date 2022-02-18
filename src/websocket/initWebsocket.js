@@ -8,7 +8,7 @@ export default function initWebsocket() {
       "channel": "book", 
       "symbol": "tBTCUSD"
     }
-
+    let torrent = 0
     ws.onopen = () => (ws.send(JSON.stringify(apiCall)))
     ws.onmessage = e => {
       let msg = null
@@ -27,16 +27,20 @@ export default function initWebsocket() {
 
       switch (true) {
         case data.length === 50:
-          console.log('bundle', data);
+          // console.log('bundle', data);
           return emitter( { type: 'fillIn', payload: data } )          
           // break;
         case data === 'hb':
           // console.log('hb', msg[1]);
           break;
         default:
-          let [price, count, amount] = data
-          let style = 'color: cyan'
-          if (amount < 0) style = 'color: pink'
+          torrent++
+          if (Number.isInteger(torrent/100)) return emitter( { type: 'addOne', payload: data } )
+          // let [price, count, amount] = data
+          // let style = 'color: cyan'
+          // if (amount < 0) style = 'color: pink'
+          // torrent.push(data)
+          // console.log(torrent);
           // console.log(`%c price ${price}, count ${count}, amount ${amount}`, style)
       }
 

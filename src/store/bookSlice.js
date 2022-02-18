@@ -1,27 +1,39 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
+// import fillInWithData from './fiilInWithData'
+import addNewData, {isBidOrAsk} from './addNewData'
 
 export const fillIn = createAction('fillIn')
 export const addOne = createAction('addOne')
 
 const initialState = { 
   bids: [], 
-  asks: []
+  asks: [],
+  bookMap: {},
+  depth: 25
 }
 
 const bookReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(fillIn, (state, action) => {
-      const [bids, asks] = splitBidsAsks(action.payload)
-      state.bids = [...state.bids, ...bids]
-      state.asks = [...state.asks, ...asks]
+      const orders = action.payload
+      orders.forEach((order, i) => {
+        const [price, count, amount] = order
+        const orderList = isBidOrAsk(amount, state.bids, state.asks)
+
+        state.bookMap[price] = [count, amount]
+        orderList.push(price)
+      })
     })
     .addCase(addOne, (state, action) => {
-      const line = action.payload
-      fnOnBidsOrAsks(
+      const order = action.payload
+      addNewData(order, [state.bookMap, state.bids, state.asks, state.depth])
+      //state.bookMap[order[0]] = [order[1], order[2]]
+      
+      /* fnOnBidsOrAsks(
         line, 
         data => state.bids = [...state.bids, data],
         data => state.asks = [...state.asks, data]
-      )
+      ) */
       /* () => state.bids = [...state.bids, line],
       () => state.asks = [...state.asks, line] */
     })
