@@ -1,33 +1,31 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 // import fillInWithData from './fiilInWithData'
-import addNewData, {
-  organizeInitialData,
-  isBidOrAsk
-} from './addNewData'
+import addNewData, { organizeInitialData } from "./addNewData";
 
-export const fillIn = createAction('fillIn')
-export const addOne = createAction('addOne')
+export const fillIn = createAction("fillIn");
+export const addOne = createAction("addOne");
 
-const initialState = { 
-  bids: [], 
+const initialState = {
+  bids: [],
   asks: [],
   bookMap: {},
-  depth: 25
-}
+  depth: 25,
+};
 
 const bookReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(fillIn, (state, action) => {
-      const { bookMap, bids, asks } = organizeInitialData(action.payload)
-      state.bookMap = {...bookMap}
-      state.bids.push(...bids)
-      state.asks.push(...asks)
+      const { bookMap, bids, asks } = organizeInitialData(action.payload);
+      // eslint-disable-next-line no-param-reassign
+      state.bookMap = { ...bookMap };
+      state.bids.push(...bids);
+      state.asks.push(...asks);
     })
     .addCase(addOne, (state, action) => {
-      const order = action.payload
-      addNewData(order, [state.bookMap, state.bids, state.asks, state.depth])
-      //state.bookMap[order[0]] = [order[1], order[2]]
-      
+      const order = action.payload;
+      addNewData(order, [state.bookMap, state.bids, state.asks, state.depth]);
+      // state.bookMap[order[0]] = [order[1], order[2]]
+
       /* fnOnBidsOrAsks(
         line, 
         data => state.bids = [...state.bids, data],
@@ -35,29 +33,10 @@ const bookReducer = createReducer(initialState, (builder) => {
       ) */
       /* () => state.bids = [...state.bids, line],
       () => state.asks = [...state.asks, line] */
-    })
-})
+    });
+});
 
-export default bookReducer
-
-
-function splitBidsAsks(data) {
-  const bids = [], asks = []
-  for (let line of data) {
-    fnOnBidsOrAsks(
-      line, 
-      data => bids.push(data), 
-      data => asks.push(data)
-    )
-  }
-  return [bids, asks]
-}
-
-function fnOnBidsOrAsks(line, fnBids, fnAsks) {
-  const [price, count, amount] = line
-  if (amount > 0) fnBids([price / 1000, count, amount])
-  else fnAsks([price / 1000, count, amount * -1])
-}
+export default bookReducer;
 
 /* import { createSlice } from '@reduxjs/toolkit'
 
@@ -78,12 +57,6 @@ export const { fillIn } = bookSlice.actions
 
 export default bookSlice.reducer */
 
-
-
-
-
-
-
 /*     bids: (state, action) => {
       state.value.bids.concat(action.payload)
     },
@@ -91,7 +64,7 @@ export default bookSlice.reducer */
       state.value.asks.concat(action.payload)
     } */
 
-    /*   reducers: {
+/*   reducers: {
     increment: (state) => {
       state.value += 1
     },
