@@ -22,7 +22,7 @@ describe("countNewTotal", () => {
     const desiredIndex = 0;
     const newAmount = 0.987;
 
-    expect(countNewTotal(orderList, bookMap, desiredIndex, newAmount)).toBe(
+    expect(countNewTotal(bookMap, orderList, newAmount, desiredIndex)).toBe(
       0.987
     );
   });
@@ -35,7 +35,7 @@ describe("countNewTotal", () => {
     const prevTotal = bookMap[prevPriceInBook][2];
     const expected = prevTotal + newAmount; // 1.04714881
 
-    expect(countNewTotal(orderList, bookMap, desiredIndex, newAmount)).toBe(
+    expect(countNewTotal(bookMap, orderList, newAmount, desiredIndex)).toBe(
       expected
     );
   });
@@ -47,7 +47,7 @@ describe("findIndexForNewOrder", () => {
     // console.log(bids, bids.indexOf(43560));
     const expected = 21; // bids.indexOf(43560);
 
-    expect(findIndexForNewOrder(newPriceInBids, newAmountInBids, bids)).toBe(
+    expect(findIndexForNewOrder(bids, newPriceInBids, newAmountInBids)).toBe(
       expected
     );
   });
@@ -57,7 +57,7 @@ describe("findIndexForNewOrder", () => {
     // console.log(asks, asks.indexOf(43599));
     const expected = 7; // asks.indexOf(43599);
 
-    expect(findIndexForNewOrder(newPriceInAsks, newAmountInAsks, asks)).toBe(
+    expect(findIndexForNewOrder(asks, newPriceInAsks, newAmountInAsks)).toBe(
       expected
     );
   });

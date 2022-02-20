@@ -25,7 +25,7 @@ export default function addNewData(newOrder, state) {
 }
 
 export function updateOrder(newOrder, samePriceInBook, state) {
-  const [price, newCount, newAmount, newTotal] = newOrder;
+  const [price, newCount, newAmount] = newOrder;
   const [bookCount, bookAmount, bookTotal] = samePriceInBook;
   const [bookMap, bidsArr, asksArr] = state;
   const orderList = isBidOrAsk(bookAmount, bidsArr, asksArr);
@@ -36,26 +36,21 @@ export function updateOrder(newOrder, samePriceInBook, state) {
 
   const countRes = bookCountWithSign + newCountWithSign;
   const amountRes = newAmount + bookAmount;
-  const totalRes = countNewTotal(orderList, bookMap, index, newAmount);
+  const totalRes = countNewTotal(bookMap, orderList, newAmount, index);
 
   if (amountRes <= 0 || countRes <= 0) {
-    deleteOrder(bookMap, price, orderList, index);
-    reCountTotals(bookMap, orderList, index, totalRes);
+    deleteOrder(bookMap, orderList, price, index);
+    updateFollowingTotals(bookMap, orderList, index, totalRes);
     const ba = isBidOrAsk(bookAmount, "bids", "asks");
     console.log(`- counted Amount: ${amountRes}, counted Count: ${countRes}
-      - new: ${(price, newCount, newAmount, newTotal)}
-      - book: ${(price, bookCount, bookAmount, bookTotal)}
+      - new: ${price}, ${newCount}, ${newAmount}
+      - book: ${price}, ${bookCount}, ${bookAmount}, ${bookTotal}
       - ${price} is deleted from ${ba} at ${index}`);
     return;
   }
-  bookMap[price] = [countRes, amountRes, totalRes];
-  reCountTotals(bookMap, orderList, index, totalRes);
-}
 
-export function deleteOrder(bookMap, price, orderList, index) {
-  // eslint-disable-next-line no-param-reassign
-  delete bookMap[price];
-  orderList.splice(index, 1);
+  bookMap[price] = [countRes, amountRes, totalRes];
+  updateFollowingTotals(bookMap, orderList, index, totalRes);
 }
 
 export function addOrder(newOrder, state) {
@@ -63,34 +58,37 @@ export function addOrder(newOrder, state) {
   const [bookMap, bidsArr, asksArr, depth] = state;
 
   const orderList = isBidOrAsk(newAmount, bidsArr, asksArr);
-  const desiredIndex = findIndexForNewOrder(newPrice, newAmount, orderList);
-  const newTotal = countNewTotal(orderList, bookMap, desiredIndex, newAmount);
+  const desiredIndex = findIndexForNewOrder(orderList, newPrice, newAmount);
+  const newTotal = countNewTotal(bookMap, orderList, newAmount, desiredIndex);
 
   orderList.splice(desiredIndex, 0, newPrice);
   bookMap[newPrice] = [newCount, newAmount, newTotal];
-  deleteExtraOrders(orderList, bookMap, depth);
-  reCountTotals(bookMap, orderList, desiredIndex, newTotal);
+  deleteExtraOrders(bookMap, orderList, depth);
+  updateFollowingTotals(bookMap, orderList, desiredIndex, newTotal);
 
   return desiredIndex;
 }
 
-export function countNewTotal(orderList, bookMap, desiredIndex, newAmount) {
-  if (desiredIndex === 0) return newAmount;
+export function countNewTotal(bookMap, orderList, newAmount, index) {
+  if (index === 0) return newAmount;
 
-  const prevOrderPrice = orderList[desiredIndex - 1];
-  const prevTotal = bookMap[prevOrderPrice][2];
-  const res = prevTotal + newAmount;
+  const res = prevTotal(bookMap, orderList, index) + newAmount;
   if (res < 0)
-    console.log(
-      `${orderList[desiredIndex]}. index: ${desiredIndex}, newTotal: ${res}`
-    );
+    console.log(`${orderList[index]}. index: ${index}, newTotal: ${res}`);
   return res;
 }
 
-export function reCountTotals(bookMap, orderList, desiredIndex, total) {
-  let newTotal = total;
+export function prevTotal(bookMap, orderList, index) {
+  if (index === 0) return 0;
+  const prevOrderPrice = orderList[index - 1];
+  return bookMap[prevOrderPrice][2];
+}
+
+export function updateFollowingTotals(bookMap, orderList, index) {
+  let newTotal =
+    prevTotal(bookMap, orderList, index) + bookMap[orderList[index]][1];
   // eslint-disable-next-line no-plusplus
-  for (let i = desiredIndex + 1; i < orderList.length; i++) {
+  for (let i = index + 1; i < orderList.length; i++) {
     const currentOrder = bookMap[orderList[i]];
     const [, amount] = currentOrder;
     newTotal += amount;
@@ -98,7 +96,7 @@ export function reCountTotals(bookMap, orderList, desiredIndex, total) {
   }
 }
 
-export function findIndexForNewOrder(newPrice, newAmount, orderList) {
+export function findIndexForNewOrder(orderList, newPrice, newAmount) {
   const condition = (currPrice) =>
     isBidOrAsk(newAmount, newPrice > currPrice, newPrice < currPrice);
 
@@ -110,12 +108,19 @@ export function findIndexForNewOrder(newPrice, newAmount, orderList) {
   return desiredIndex;
 }
 
-export function deleteExtraOrders(orderList, bookMap, depth) {
+export function deleteExtraOrders(bookMap, orderList, depth) {
   const limit = depth + 5;
   if (orderList.length < limit) return;
   // eslint-disable-next-line no-param-reassign
-  delete bookMap[orderList[depth]];
-  orderList.pop();
+  const lastOrderIndex = limit - 1;
+  const price = orderList[lastOrderIndex];
+  deleteOrder(bookMap, orderList, price, lastOrderIndex);
+}
+
+export function deleteOrder(bookMap, orderList, price, index) {
+  // eslint-disable-next-line no-param-reassign
+  delete bookMap[price];
+  orderList.splice(index, 1);
 }
 
 export function findIndexByPrice(price, arr) {
