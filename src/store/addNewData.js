@@ -1,30 +1,5 @@
 // import { current } from "@reduxjs/toolkit";
 
-export function organizeInitialData(orders) {
-  const ordersLength = orders.length;
-  const bookMap = {};
-  const bids = [];
-  const asks = [];
-  let i = 0;
-  let bidTotal = 0;
-  let askTotal = 0;
-
-  while (i < ordersLength / 2) {
-    const [bidPrice, bidCount, bidAmount] = orders[i];
-    const [askPrice, askCount, askAmount] = orders[ordersLength - 1 - i];
-
-    bidTotal += bidAmount;
-    askTotal += askAmount;
-
-    bookMap[bidPrice] = [bidCount, bidAmount, bidTotal];
-    bookMap[askPrice] = [askCount, askAmount, askTotal];
-    bids.push(bidPrice);
-    asks.push(askPrice);
-    i++;
-  }
-  return { bookMap, bids, asks };
-}
-
 export default function addNewData(newOrder, state) {
   const [newPrice, newCount, newAmount] = newOrder;
   const [bookMap, bidsArr, asksArr, depth] = state;
@@ -33,62 +8,57 @@ export default function addNewData(newOrder, state) {
   if (newCount === 0) return;
 
   // price is out of scope`
-  if (newPrice < bidsArr[depth - 1] || newPrice > asksArr[depth - 1]) {
-    console.log(
-      `${newPrice} is out of scope ${bidsArr[depth - 1]} - ${
-        asksArr[depth - 1]
-      }`
-    );
-    return;
-  }
-
-  const samePriceInBook = bookMap[newPrice] || null;
-  let indexOfNewOrderInBook;
-
-  // there's no such a price in the book
-  if (!samePriceInBook) {
-    indexOfNewOrderInBook = addNewPriceToBook(newOrder, state);
-    const ba = isBidOrAsk(newAmount, "bids", "asks");
-    console.log(
-      `${newPrice} is added to the ${ba} at ${indexOfNewOrderInBook}`
-    );
-    // console.log('arr', bidsArr.length, asksArr.length);
-    return;
-  }
+  if (newPrice < bidsArr[depth - 1] || newPrice > asksArr[depth - 1]) return;
 
   // there's the price in the book
-  changeOrderWithThePrice(newOrder, samePriceInBook, state);
+  const samePriceInBook = bookMap[newPrice] || null;
+  if (samePriceInBook) {
+    updateOrder(newOrder, samePriceInBook, state);
+    console.log(`${newPrice} is changed`);
+    return;
+  }
+
+  // there's no such a price in the book
+  const indexOfNewOrderInBook = addOrder(newOrder, state);
+  const ba = isBidOrAsk(newAmount, "bids", "asks");
+  console.log(`${newPrice} is added to the ${ba} at ${indexOfNewOrderInBook}`);
 }
 
-export function changeOrderWithThePrice(newOrder, samePriceInBook, state) {
+export function updateOrder(newOrder, samePriceInBook, state) {
   const [price, newCount, newAmount, newTotal] = newOrder;
   const [bookCount, bookAmount, bookTotal] = samePriceInBook;
   const [bookMap, bidsArr, asksArr] = state;
+  const orderList = isBidOrAsk(bookAmount, bidsArr, asksArr);
 
   const bookCountWithSign = bookAmount < 0 ? -bookCount : bookCount;
   const newCountWithSign = newAmount < 0 ? -newCount : newCount;
+  const index = findIndexByPrice(price, orderList);
 
   const countRes = bookCountWithSign + newCountWithSign;
   const amountRes = newAmount + bookAmount;
+  const totalRes = countNewTotal(orderList, bookMap, index, newAmount);
 
-  const orderList = isBidOrAsk(bookAmount, bidsArr, asksArr);
-  if (amountRes === 0 || countRes === 0) {
-    //   delete bookMap[price];
-    const index = findPriceAndDelete(price, orderList);
-    console.log(`- counted Amount: ${amountRes}, counted Count: ${countRes}`);
-    console.log(`- new: ${(price, newCount, newAmount, newTotal)}`);
-    console.log(`- book: ${(price, bookCount, bookAmount, bookTotal)}`);
+  if (amountRes <= 0 || countRes <= 0) {
+    deleteOrder(bookMap, price, orderList, index);
+    reCountTotals(bookMap, orderList, index, totalRes);
     const ba = isBidOrAsk(bookAmount, "bids", "asks");
-    console.log(`- ${price} is deleted from ${ba} at ${index}`);
-
-    //   console.log('arr', bidsArr.length, asksArr.length);
+    console.log(`- counted Amount: ${amountRes}, counted Count: ${countRes}
+      - new: ${(price, newCount, newAmount, newTotal)}
+      - book: ${(price, bookCount, bookAmount, bookTotal)}
+      - ${price} is deleted from ${ba} at ${index}`);
     return;
   }
-
-  bookMap[price] = [countRes, amountRes];
+  bookMap[price] = [countRes, amountRes, totalRes];
+  reCountTotals(bookMap, orderList, index, totalRes);
 }
 
-export function addNewPriceToBook(newOrder, state) {
+export function deleteOrder(bookMap, price, orderList, index) {
+  // eslint-disable-next-line no-param-reassign
+  delete bookMap[price];
+  orderList.splice(index, 1);
+}
+
+export function addOrder(newOrder, state) {
   const [newPrice, newCount, newAmount] = newOrder;
   const [bookMap, bidsArr, asksArr, depth] = state;
 
@@ -98,7 +68,7 @@ export function addNewPriceToBook(newOrder, state) {
 
   orderList.splice(desiredIndex, 0, newPrice);
   bookMap[newPrice] = [newCount, newAmount, newTotal];
-  delExtraOrders(orderList, bookMap, depth);
+  deleteExtraOrders(orderList, bookMap, depth);
   reCountTotals(bookMap, orderList, desiredIndex, newTotal);
 
   return desiredIndex;
@@ -109,7 +79,12 @@ export function countNewTotal(orderList, bookMap, desiredIndex, newAmount) {
 
   const prevOrderPrice = orderList[desiredIndex - 1];
   const prevTotal = bookMap[prevOrderPrice][2];
-  return prevTotal + newAmount;
+  const res = prevTotal + newAmount;
+  if (res < 0)
+    console.log(
+      `${orderList[desiredIndex]}. index: ${desiredIndex}, newTotal: ${res}`
+    );
+  return res;
 }
 
 export function reCountTotals(bookMap, orderList, desiredIndex, total) {
@@ -135,7 +110,7 @@ export function findIndexForNewOrder(newPrice, newAmount, orderList) {
   return desiredIndex;
 }
 
-export function delExtraOrders(orderList, bookMap, depth) {
+export function deleteExtraOrders(orderList, bookMap, depth) {
   const limit = depth + 5;
   if (orderList.length < limit) return;
   // eslint-disable-next-line no-param-reassign
@@ -143,10 +118,8 @@ export function delExtraOrders(orderList, bookMap, depth) {
   orderList.pop();
 }
 
-export function findPriceAndDelete(price, arr) {
-  const i = arr.indexOf(price);
-  arr.splice(i, 1);
-  return i;
+export function findIndexByPrice(price, arr) {
+  return arr.indexOf(price);
 }
 
 export function isBidOrAsk(amount, bid, ask) {

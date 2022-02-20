@@ -1,6 +1,7 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 // import fillInWithData from './fiilInWithData'
-import addNewData, { organizeInitialData } from "./addNewData";
+import addNewData from "./addNewData";
+import organizeInitialData from "./organizeInitialData";
 
 export const fillIn = createAction("fillIn");
 export const addOne = createAction("addOne");
