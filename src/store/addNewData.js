@@ -14,7 +14,6 @@ export default function addNewData(newOrder, state) {
   const samePriceInBook = bookMap[newPrice] || null;
   if (samePriceInBook) {
     updateOrder(newOrder, samePriceInBook, state);
-    console.log(`${newPrice} is changed`);
     return;
   }
 
@@ -29,25 +28,36 @@ export function updateOrder(newOrder, samePriceInBook, state) {
   const [bookCount, bookAmount, bookTotal] = samePriceInBook;
   const [bookMap, bidsArr, asksArr] = state;
   const orderList = isBidOrAsk(bookAmount, bidsArr, asksArr);
+  const areOrdersOnTheSameSide = Math.sign(newAmount) === Math.sign(bookAmount);
+
+  const amountRes = newAmount + bookAmount;
 
   const bookCountWithSign = bookAmount < 0 ? -bookCount : bookCount;
   const newCountWithSign = newAmount < 0 ? -newCount : newCount;
+  const countRes = areOrdersOnTheSameSide
+    ? Math.abs(bookCountWithSign) + Math.abs(newCountWithSign)
+    : bookCountWithSign + newCountWithSign;
+
   const index = findIndexByPrice(price, orderList);
 
-  const countRes = bookCountWithSign + newCountWithSign;
-  const amountRes = newAmount + bookAmount;
-  const totalRes = countNewTotal(bookMap, orderList, newAmount, index);
-
-  if (amountRes <= 0 || countRes <= 0) {
-    deleteOrder(bookMap, orderList, price, index);
-    updateFollowingTotals(bookMap, orderList, index, totalRes);
+  if (countRes <= 0) {
     const ba = isBidOrAsk(bookAmount, "bids", "asks");
-    console.log(`- counted Amount: ${amountRes}, counted Count: ${countRes}
-      - new: ${price}, ${newCount}, ${newAmount}
-      - book: ${price}, ${bookCount}, ${bookAmount}, ${bookTotal}
-      - ${price} is deleted from ${ba} at ${index}`);
+    console.log(`
+${price}
+    - new: ${newCount}, ${newAmount}
+    - book: ${bookCount}, ${bookAmount}, ${bookTotal}
+    - counted Amount: ${amountRes}, counted Count: ${countRes}
+    - ${countRes <= 0 ? "deleted" : "updated"} from ${ba} at ${index}`);
+  }
+
+  if (countRes <= 0) {
+    deleteOrder(bookMap, orderList, price, index);
+    const newTotal = countNewTotal(bookMap, orderList, index, newAmount);
+    updateFollowingTotals(bookMap, orderList, index, newTotal);
     return;
   }
+
+  const totalRes = countNewTotal(bookMap, orderList, index, newAmount);
 
   bookMap[price] = [countRes, amountRes, totalRes];
   updateFollowingTotals(bookMap, orderList, index, totalRes);
@@ -59,7 +69,7 @@ export function addOrder(newOrder, state) {
 
   const orderList = isBidOrAsk(newAmount, bidsArr, asksArr);
   const desiredIndex = findIndexForNewOrder(orderList, newPrice, newAmount);
-  const newTotal = countNewTotal(bookMap, orderList, newAmount, desiredIndex);
+  const newTotal = countNewTotal(bookMap, orderList, desiredIndex, newAmount);
 
   orderList.splice(desiredIndex, 0, newPrice);
   bookMap[newPrice] = [newCount, newAmount, newTotal];
@@ -69,24 +79,32 @@ export function addOrder(newOrder, state) {
   return desiredIndex;
 }
 
-export function countNewTotal(bookMap, orderList, newAmount, index) {
-  if (index === 0) return newAmount;
+export function countNewTotal(bookMap, orderList, index, newAmount = 0) {
+  const amount = newAmount || getAmountByIndex(bookMap, orderList, index);
 
-  const res = prevTotal(bookMap, orderList, index) + newAmount;
-  if (res < 0)
-    console.log(`${orderList[index]}. index: ${index}, newTotal: ${res}`);
-  return res;
+  if (index === 0) return amount;
+
+  const newTotal = prevTotal(bookMap, orderList, index) + amount;
+  return newTotal;
 }
 
 export function prevTotal(bookMap, orderList, index) {
   if (index === 0) return 0;
   const prevOrderPrice = orderList[index - 1];
+  if (!bookMap[prevOrderPrice]) {
+    console.log(`
+  ${prevOrderPrice} problem.
+      current price is ${orderList[index]} at ${index}`);
+    debugger;
+  }
   return bookMap[prevOrderPrice][2];
 }
 
-export function updateFollowingTotals(bookMap, orderList, index) {
+export function updateFollowingTotals(bookMap, orderList, index, total = 0) {
   let newTotal =
-    prevTotal(bookMap, orderList, index) + bookMap[orderList[index]][1];
+    total ||
+    getAmountByIndex(bookMap, orderList, index) +
+      prevTotal(bookMap, orderList, index);
   // eslint-disable-next-line no-plusplus
   for (let i = index + 1; i < orderList.length; i++) {
     const currentOrder = bookMap[orderList[i]];
@@ -96,6 +114,10 @@ export function updateFollowingTotals(bookMap, orderList, index) {
   }
 }
 
+export function getAmountByIndex(bookMap, orderList, index) {
+  return bookMap[orderList[index]][1];
+}
+
 export function findIndexForNewOrder(orderList, newPrice, newAmount) {
   const condition = (currPrice) =>
     isBidOrAsk(newAmount, newPrice > currPrice, newPrice < currPrice);
@@ -103,6 +125,13 @@ export function findIndexForNewOrder(orderList, newPrice, newAmount) {
   let desiredIndex;
   for (let i = orderList.length - 1; i >= 0; i--) {
     if (condition(orderList[i])) desiredIndex = i;
+  }
+
+  if (desiredIndex === -1) {
+    console.log(
+      `No index is found. New price: ${newPrice}, amount: ${newAmount}`
+    );
+    debugger;
   }
 
   return desiredIndex;

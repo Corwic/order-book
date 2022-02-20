@@ -1,16 +1,7 @@
 /* eslint-disable no-undef */
 import organizeInitialData from "../store/organizeInitialData";
 
-import {
-  /* default as addNewData */
-  // changeOrderWithThePrice,
-  // addNewPriceToBook,
-  countNewTotal,
-  // reCountTotals,
-  findIndexForNewOrder,
-  // delExtraOrders,
-  // findPriceAndDelete,
-} from "../store/addNewData";
+import { countNewTotal, findIndexForNewOrder } from "../store/addNewData";
 import data from "./data";
 // import dataflow from "./dataflow";
 
@@ -63,12 +54,23 @@ describe("findIndexForNewOrder", () => {
   });
 });
 
-describe("changeOrderWithThePrice", () => {
+describe("CloseTheOrder", () => {
+  test("", () => {
+    expect(0).toBe(0);
+  });
+});
+
+// if (!desiredIndex) {
+//   console.log(`No index is found. New price: ${newPrice}, amount: ${newAmount}`;
+//   debugger;
+// }
+
+/* describe("changeOrderWithThePrice", () => {
   test("", () => {});
 });
 
 describe("reCountTotals", () => {
   test("", () => {});
-});
+}); */
 
 // if the order was closed but there's no more orders
