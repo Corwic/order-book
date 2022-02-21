@@ -4,23 +4,37 @@ export default function addNewData(newOrder, state) {
   const [newPrice, newCount, newAmount] = newOrder;
   const [bookMap, bidsArr, asksArr, depth] = state;
 
-  // blank order
-  if (newCount === 0) return;
+  // price is out of scope
+  if (newPrice < bidsArr[depth + 4] || newPrice > asksArr[depth + 4]) return;
 
-  // price is out of scope`
-  if (newPrice < bidsArr[depth - 1] || newPrice > asksArr[depth - 1]) return;
+  // delete order
+  if (newCount === 0) {
+    const orderList = isBidOrAsk(newAmount, bidsArr, asksArr);
+    const index = findIndexByPrice(orderList, newPrice);
+    deleteOrder(bookMap, orderList, newPrice, index);
+    if (!orderList[index]) return;
+    const newTotal = countNewTotal(bookMap, orderList, index);
+    updateFollowingTotals(bookMap, orderList, index, newTotal);
+    return;
+  }
 
   // there's the price in the book
-  const samePriceInBook = bookMap[newPrice] || null;
-  if (samePriceInBook) {
-    updateOrder(newOrder, samePriceInBook, state);
+  const orderWithTheSamePrice = bookMap[newPrice] || null;
+  if (orderWithTheSamePrice) {
+    updateOrder(newOrder, orderWithTheSamePrice, state);
     return;
   }
 
   // there's no such a price in the book
-  const indexOfNewOrderInBook = addOrder(newOrder, state);
-  const ba = isBidOrAsk(newAmount, "bids", "asks");
-  console.log(`${newPrice} is added to the ${ba} at ${indexOfNewOrderInBook}`);
+  addOrder(newOrder, state);
+  // const ba = isBidOrAsk(newAmount, "bids", "asks");
+  // console.log(`${newPrice} is added to the ${ba} at ${indexOfNewOrderInBook}`);
+}
+
+export function deleteOrder(bookMap, orderList, price, index) {
+  // eslint-disable-next-line no-param-reassign
+  delete bookMap[price];
+  orderList.splice(index, 1);
 }
 
 export function updateOrder(newOrder, samePriceInBook, state) {
@@ -30,6 +44,12 @@ export function updateOrder(newOrder, samePriceInBook, state) {
   const orderList = isBidOrAsk(bookAmount, bidsArr, asksArr);
   const areOrdersOnTheSameSide = Math.sign(newAmount) === Math.sign(bookAmount);
 
+  const index = findIndexByPrice(orderList, price);
+  const newTotal = countNewTotal(bookMap, orderList, index, newAmount);
+  bookMap[price] = [newCount, newAmount, newTotal];
+  updateFollowingTotals(bookMap, orderList, index, newTotal);
+
+  /* 
   const amountRes = newAmount + bookAmount;
 
   const bookCountWithSign = bookAmount < 0 ? -bookCount : bookCount;
@@ -59,8 +79,7 @@ ${price}
 
   const totalRes = countNewTotal(bookMap, orderList, index, newAmount);
 
-  bookMap[price] = [countRes, amountRes, totalRes];
-  updateFollowingTotals(bookMap, orderList, index, totalRes);
+  */
 }
 
 export function addOrder(newOrder, state) {
@@ -115,6 +134,7 @@ export function updateFollowingTotals(bookMap, orderList, index, total = 0) {
 }
 
 export function getAmountByIndex(bookMap, orderList, index) {
+  if (!bookMap[orderList[index]]) debugger;
   return bookMap[orderList[index]][1];
 }
 
@@ -127,14 +147,7 @@ export function findIndexForNewOrder(orderList, newPrice, newAmount) {
     if (condition(orderList[i])) desiredIndex = i;
   }
 
-  if (desiredIndex === -1) {
-    console.log(
-      `No index is found. New price: ${newPrice}, amount: ${newAmount}`
-    );
-    debugger;
-  }
-
-  return desiredIndex;
+  return desiredIndex || 0;
 }
 
 export function deleteExtraOrders(bookMap, orderList, depth) {
@@ -146,14 +159,10 @@ export function deleteExtraOrders(bookMap, orderList, depth) {
   deleteOrder(bookMap, orderList, price, lastOrderIndex);
 }
 
-export function deleteOrder(bookMap, orderList, price, index) {
-  // eslint-disable-next-line no-param-reassign
-  delete bookMap[price];
-  orderList.splice(index, 1);
-}
-
-export function findIndexByPrice(price, arr) {
-  return arr.indexOf(price);
+export function findIndexByPrice(orderList, price) {
+  const index = orderList.indexOf(price);
+  if (index === -1) debugger;
+  return index >= 0 ? index : 0;
 }
 
 export function isBidOrAsk(amount, bid, ask) {

@@ -3,12 +3,11 @@ import organizeInitialData from "../store/organizeInitialData";
 
 import { countNewTotal, findIndexForNewOrder } from "../store/addNewData";
 import data from "./data";
-// import dataflow from "./dataflow";
 
 const { bookMap, bids, asks } = organizeInitialData(data);
 
 describe("countNewTotal", () => {
-  test("index = 0, total should be equal amount", () => {
+  test("index = 0, total should be equal to the amount", () => {
     const orderList = bids;
     const desiredIndex = 0;
     const newAmount = 0.987;
@@ -53,24 +52,3 @@ describe("findIndexForNewOrder", () => {
     );
   });
 });
-
-describe("CloseTheOrder", () => {
-  test("", () => {
-    expect(0).toBe(0);
-  });
-});
-
-// if (!desiredIndex) {
-//   console.log(`No index is found. New price: ${newPrice}, amount: ${newAmount}`;
-//   debugger;
-// }
-
-/* describe("changeOrderWithThePrice", () => {
-  test("", () => {});
-});
-
-describe("reCountTotals", () => {
-  test("", () => {});
-}); */
-
-// if the order was closed but there's no more orders
