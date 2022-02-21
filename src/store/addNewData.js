@@ -114,7 +114,7 @@ export function prevTotal(bookMap, orderList, index) {
     console.log(`
   ${prevOrderPrice} problem.
       current price is ${orderList[index]} at ${index}`);
-    debugger;
+    // debugger;
   }
   return bookMap[prevOrderPrice][2];
 }
@@ -134,7 +134,7 @@ export function updateFollowingTotals(bookMap, orderList, index, total = 0) {
 }
 
 export function getAmountByIndex(bookMap, orderList, index) {
-  if (!bookMap[orderList[index]]) debugger;
+  // if (!bookMap[orderList[index]]) debugger;
   return bookMap[orderList[index]][1];
 }
 
@@ -161,7 +161,7 @@ export function deleteExtraOrders(bookMap, orderList, depth) {
 
 export function findIndexByPrice(orderList, price) {
   const index = orderList.indexOf(price);
-  if (index === -1) debugger;
+  // if (index === -1) debugger;
   return index >= 0 ? index : 0;
 }
 

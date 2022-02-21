@@ -15,8 +15,8 @@ export default function initWebsocket() {
       let msg = null;
       try {
         msg = JSON.parse(e.data);
-      } catch (err) {
-        console.log(`Error parsing : ${err.data}`);
+      } catch (e) {
+        console.log(`Error parsing : ${e.data}`);
       }
 
       if (!msg.length) {
