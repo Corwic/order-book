@@ -11,20 +11,24 @@ export default function DepthGraph({ book }) {
 
   return (
     <div className="table">
-      <div id="bids" className="depth-chart table-half" />
-      <div id="asks" className="depth-chart table-half" />
+      <div id="bids" className="table-half depth-chart " />
+      <div id="asks" className="table-half depth-chart" />
     </div>
   );
 }
 
 // ==================================
 
-const widthmax = 320;
-const heightmax = 445;
+const widthmax = 304;
+const heightmax = 431;
 const barPadding = 0;
+const inner = 1;
+const outer = 1;
+const top = 16;
+const bottom = 0;
 
 function bids(id, { bids, bookMap }) {
-  const margin = { top: 12, right: 0, bottom: 12, left: 12 };
+  const margin = { top, right: inner, bottom, left: outer };
   const width = widthmax - margin.left - margin.right;
   const height = heightmax - margin.top - margin.bottom;
 
@@ -47,7 +51,7 @@ function bids(id, { bids, bookMap }) {
     return arr.reduce(builder, []);
   };
 
-  let data = [];
+  const data = [];
   const cumData = [];
 
   // create cumulative data array
@@ -67,28 +71,28 @@ function bids(id, { bids, bookMap }) {
   }
 
   // reverse data for bids
-  data = data.reverse();
-
-  // set the ranges
-  const x = d3.scaleBand().range([0, width]).padding(barPadding);
-  const y = d3.scaleLinear().range([height, 0]);
+  // data = data.reverse();
 
   data.forEach(function (d) {
     d.orders = +d.orders;
   });
 
+  // set the ranges
+  const x = d3.scaleLinear().range([0, width]);
+  const y = d3.scaleBand().range([0, height]).padding(barPadding);
+
   // Scale the range of the data in the domains
-  x.domain(
+  x.domain([
+    d3.max(data, function (d) {
+      return d.orders;
+    }),
+    0,
+  ]);
+  y.domain(
     data.map(function (d) {
       return d.idx;
     })
   );
-  y.domain([
-    0,
-    d3.max(data, function (d) {
-      return d.orders;
-    }),
-  ]);
 
   svg.selectAll(".bar-bids").remove("rect");
 
@@ -101,26 +105,23 @@ function bids(id, { bids, bookMap }) {
     .attr("class", "bar")
     .attr("class", "bar-bids")
     .attr("x", function (d) {
-      return x(d.idx);
+      return x(d.orders);
     })
-    .attr("width", x.bandwidth())
     .attr("y", function (d) {
-      return y(d.orders);
+      return y(d.idx);
     })
-    .attr("height", function (d) {
-      return height - y(d.orders);
-    });
+    .attr("width", function (d) {
+      return width - x(d.orders);
+    })
+    .attr("height", y.bandwidth());
 }
 
 function asks(id, { asks, bookMap }) {
-  const margin = { top: 12, right: 12, bottom: 12, left: 0 };
+  const margin = { top, right: outer, bottom, left: inner };
   const width = widthmax - margin.left - margin.right;
   const height = heightmax - margin.top - margin.bottom;
 
   document.querySelector(`#${id}`).replaceChildren();
-  // set the ranges
-  const x = d3.scaleBand().range([0, width]).padding(barPadding);
-  const y = d3.scaleLinear().range([height, 0]);
 
   // append the svg object to a div ID
   const svg = d3
@@ -165,18 +166,22 @@ function asks(id, { asks, bookMap }) {
     d.orders = +d.orders;
   });
 
+  // set the ranges
+  const x = d3.scaleLinear().range([0, width]);
+  const y = d3.scaleBand().range([0, height]).padding(barPadding);
+
   // Scale the range of the data in the domains
-  x.domain(
+  x.domain([
+    d3.max(data, function (d) {
+      return d.orders;
+    }),
+    0,
+  ]);
+  y.domain(
     data.map(function (d) {
       return d.idx;
     })
   );
-  y.domain([
-    0,
-    d3.max(data, function (d) {
-      return d.orders;
-    }),
-  ]);
 
   svg.selectAll(".bar-asks").remove("rect");
 
@@ -189,13 +194,13 @@ function asks(id, { asks, bookMap }) {
     .attr("class", "bar")
     .attr("class", "bar-asks")
     .attr("x", function (d) {
-      return x(d.idx);
+      return 0; // x(d.orders);
     })
-    .attr("width", x.bandwidth())
     .attr("y", function (d) {
-      return y(d.orders);
+      return y(d.idx);
     })
-    .attr("height", function (d) {
-      return height - y(d.orders);
-    });
+    .attr("width", function (d) {
+      return width - x(d.orders);
+    })
+    .attr("height", y.bandwidth());
 }

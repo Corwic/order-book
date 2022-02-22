@@ -1,18 +1,20 @@
 @import "../styles/global-imports";
 
-
 .table {
   display: flex;
   width: 640px;
   padding: 1rem;
   box-sizing: border-box;
+  position:absolute;
 
   @include narrowBreakPoint {
     flex-direction: column;
   }
 }
+
 .table-half {
   flex-grow: 1;
   height: 445px;
-  
+  //border: solid black 1px;
+  padding: 0 2px
 }

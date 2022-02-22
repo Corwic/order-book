@@ -9,8 +9,8 @@ function App() {
   return (
     <div className="App">
       <header className="App-header" />
-      <OrderBookTable book={book} />
       <DepthGraph book={book} />
+      <OrderBookTable book={book} />
     </div>
   );
 }
