@@ -1,37 +1,8 @@
 import React from "react";
-import styled from "styled-components";
+import "./OrderBook.scss";
+// import styled from "styled-components";
 import HeaderRow from "./HeaderRow";
 import ListOrders from "./ListOrders";
-
-const Table = styled.div`
-  display: flex;
-  width: 100%;
-  padding: 1rem;
-  box-sizing: border-box;
-
-  @media screen and (max-width: 640px) {
-    flex-direction: column;
-  }
-`;
-
-const TableSide = styled.div`
-  flex-grow: 1;
-  height: 445px;
-  .row {
-    grid-template-areas: "${(props) =>
-      props["data-list"] === "asks"
-        ? props["data-sequence"].split(" ").reverse().join(" ")
-        : props["data-sequence"]}";
-  }
-  @media screen and (max-width: 640px) {
-    .row {
-      grid-template-areas: "${(props) =>
-        props["data-list"] === "asks"
-          ? props["data-sequence"]
-          : props["data-sequence"]}";
-    }
-  }
-`;
 
 export default function OrderBookTable({ book }) {
   const { bids, asks, bookMap, depth } = book;
@@ -44,8 +15,8 @@ export default function OrderBookTable({ book }) {
   if (!bids || !bids.length) return <div>Loading</div>;
 
   return (
-    <Table>
-      <TableSide data-list="bids" data-sequence={sequence}>
+    <div className="table">
+      <div className="table-half bids" data-sequence={sequence}>
         <HeaderRow
           price="Price"
           count="Count"
@@ -60,8 +31,8 @@ export default function OrderBookTable({ book }) {
           side="bids"
           sequence={sequence}
         />
-      </TableSide>
-      <TableSide data-list="asks" data-sequence={sequence}>
+      </div>
+      <div className="table-half asks" data-sequence={sequence}>
         <HeaderRow
           price="Price"
           count="Count"
@@ -77,8 +48,8 @@ export default function OrderBookTable({ book }) {
           side="asks"
           sequence={sequence}
         />
-      </TableSide>
-    </Table>
+      </div>
+    </div>
   );
 }
 

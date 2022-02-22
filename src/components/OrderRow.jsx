@@ -1,27 +1,8 @@
 import React from "react";
-import styled from "styled-components";
+import "./OrderRow.scss";
+// import styled from "styled-components";
 
-export const Row = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  text-align: right;
-  width: 100%;
-
-  .price {
-    grid-area: price;
-  }
-  .count {
-    grid-area: count;
-  }
-  .amount {
-    grid-area: amount;
-  }
-  .total {
-    grid-area: total;
-  }
-`;
-
-function OrderRow({ price, count, amount, total, sequence }) {
+function OrderRow({ price, count, amount, total, side }) {
   const data = {
     price: (price / 1000).toFixed(3),
     count,
@@ -31,13 +12,13 @@ function OrderRow({ price, count, amount, total, sequence }) {
   const seq = ["price", "count", "amount", "total"];
 
   return (
-    <Row className="row">
+    <div className={`row ${side}`}>
       {seq.map((type, i) => (
         <div key={type + i} className={type}>
           {data[type]}
         </div>
       ))}
-    </Row>
+    </div>
   );
 }
 

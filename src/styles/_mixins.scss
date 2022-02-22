@@ -1,0 +1,13 @@
+@import "./variables";
+
+@mixin narrowBreakPoint {
+  @media (max-width: #{$screen-narrow}) {
+      @content;
+  }
+}
+
+@mixin widewBreakPoint {
+  @media (min-width: #{$screen-wide}) {
+      @content;
+  }
+}

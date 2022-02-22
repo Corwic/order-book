@@ -1,0 +1,35 @@
+@import "../styles/global-imports";
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  // grid-template-areas is set in the OrderBook
+  text-align: right;
+  width: 100%;
+
+  &.bids {
+    grid-template-areas: $data-sequence-bids;
+  }
+  
+  &.asks {
+    grid-template-areas: $data-sequence-asks;
+    @include narrowBreakPoint { 
+      grid-template-areas: $data-sequence-bids;
+    }
+  }
+
+  .price {
+    grid-area: price;
+  }
+  .count {
+    grid-area: count;
+  }
+  .amount {
+    grid-area: amount;
+  }
+  .total {
+    grid-area: total;
+  }
+
+}
+

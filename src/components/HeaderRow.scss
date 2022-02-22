@@ -1,0 +1,13 @@
+@import "../styles/global-imports";
+
+.row.header {
+  font-weight: bold;
+  color: $text-color-variant;
+  text-transform: uppercase;
+  .asks {
+    @include narrowBreakPoint {
+      display: none;
+    }
+  }
+}
+

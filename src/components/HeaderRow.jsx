@@ -1,18 +1,10 @@
 import React from "react";
-import styled from "styled-components";
-import { Row } from "./OrderRow";
+import "./HeaderRow.scss";
+// import { Row } from "./OrderRow";
 
-const HRow = styled(Row)`
-  font-weight: bold;
-  color: rgb(var(--text-color-variant));
-  text-transform: uppercase;
+// const HRow = styled(Row)``;
 
-  @media screen and (max-width: 640px) {
-    display: ${(props) => (props["data-side"] === "asks" ? "none" : "grid")};
-  }
-`;
-
-function HeaderRow({ price, count, amount, total, side, sequence }) {
+function HeaderRow({ price, count, amount, total, side }) {
   const data = {
     price,
     count,
@@ -22,13 +14,13 @@ function HeaderRow({ price, count, amount, total, side, sequence }) {
   const seq = ["price", "count", "amount", "total"];
 
   return (
-    <HRow className="row header" data-side={side}>
+    <div className={`row header ${side}`}>
       {seq.map((type, i) => (
         <div key={type + i} className={type}>
           {data[type]}
         </div>
       ))}
-    </HRow>
+    </div>
   );
 }
 
