@@ -34,8 +34,9 @@ export default function initWebsocket() {
           break;
         default:
           torrent++;
-          if (Number.isInteger(torrent / 1))
-            return emitter({ type: "addOne", payload: data });
+        // if (Number.isInteger(torrent / 1))
+        //   return emitter({ type: "addOne", payload: data });
+
         // let [price, count, amount] = data
         // let style = 'color: cyan'
         // if (amount < 0) style = 'color: pink'

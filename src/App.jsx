@@ -1,7 +1,7 @@
+import React from "react";
 import { useSelector } from "react-redux";
-import "./App.css";
 import OrderBookTable from "./components/OrderBook";
-// import useWebsocket from './websocket/hook'
+import DepthGraph from "./components/DepthGraph";
 
 function App() {
   const book = useSelector((state) => state.orderBook);
@@ -10,6 +10,7 @@ function App() {
     <div className="App">
       <header className="App-header" />
       <OrderBookTable book={book} />
+      <DepthGraph book={book} />
     </div>
   );
 }
