@@ -1,21 +1,19 @@
 import React from "react";
 import "./OrderRow.scss";
-// import styled from "styled-components";
 
-function OrderRow({ price, count, amount, total, side }) {
-  const data = {
-    price: (price / 1000).toFixed(3),
-    count,
-    amount: Math.abs(amount).toFixed(4),
-    total: Math.abs(total).toFixed(4),
+function OrderRow({ order, side }) {
+  const orderData = {
+    price: (order.price / 1000).toFixed(3),
+    count: order.count,
+    amount: Math.abs(order.amount).toFixed(4),
+    total: Math.abs(order.total).toFixed(4),
   };
-  const seq = ["price", "count", "amount", "total"];
 
   return (
-    <div className={`row ${side}`}>
-      {seq.map((type, i) => (
-        <div key={type + i} className={type}>
-          {data[type]}
+    <div className={`row data ${side}`}>
+      {Object.keys(orderData).map((key, i) => (
+        <div key={key} className={key}>
+          {orderData[key]}
         </div>
       ))}
     </div>
@@ -23,8 +21,3 @@ function OrderRow({ price, count, amount, total, side }) {
 }
 
 export default OrderRow;
-/* 
-Object.keys(myObject).map(function(key, index) {
-  myObject[key] *= 2;
-}); 
-*/

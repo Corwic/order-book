@@ -3,9 +3,13 @@
 .row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  // grid-template-areas is set in the OrderBook
   text-align: right;
   width: 100%;
+
+  &.data:hover {
+    background-color: rgba(1, 167, 129,0.1);
+    cursor: pointer;
+  }
 
   &.bids {
     grid-template-areas: $data-sequence-bids;
@@ -23,6 +27,7 @@
   }
   .count {
     grid-area: count;
+    // text-align: center;
   }
   .amount {
     grid-area: amount;
@@ -30,6 +35,7 @@
   .total {
     grid-area: total;
   }
+
 
 }
 

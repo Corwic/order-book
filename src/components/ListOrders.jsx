@@ -1,21 +1,18 @@
 import React from "react";
 import OrderRow from "./OrderRow";
 
-function ListOrders({ data, bookMap, side, sequence }) {
-  const condition = data && data.length;
-  // const isThereData = arr => arr.length ? (...arr) : [0,0,0]
+function ListOrders({ priceList, bookMap, side }) {
+  let total = 0;
 
-  return data.map((orderPrice, index) => {
-    if (orderPrice.length) return <EmptyRow />;
+  return priceList.map((orderPrice, index) => {
+    // if (orderPrice.length) return <EmptyRow />;
+    const [count, amount] = bookMap[orderPrice];
+    total += amount;
     return (
       <OrderRow
         key={(orderPrice.toString() || 0) + index}
-        price={orderPrice || 0}
-        count={bookMap[orderPrice][0] || 0}
-        amount={bookMap[orderPrice][1] || 0}
-        total={bookMap[orderPrice][2] || ""}
+        order={{ price: orderPrice, count, amount, total }}
         side={side}
-        sequence={sequence}
       />
     );
   });

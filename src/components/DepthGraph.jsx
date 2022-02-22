@@ -10,9 +10,9 @@ export default function DepthGraph({ book }) {
   }, [book]);
 
   return (
-    <div className="table">
-      <div id="bids" className="table-half depth-chart " />
-      <div id="asks" className="table-half depth-chart" />
+    <div className="table depth-chart">
+      <div id="bids" className="table-half bids" />
+      <div id="asks" className="table-half asks" />
     </div>
   );
 }

@@ -4,8 +4,11 @@
   font-weight: bold;
   color: $text-color-variant;
   text-transform: uppercase;
-  .asks {
-    @include narrowBreakPoint {
+  @include narrowBreakPoint {
+    &.bids {
+      visibility: hidden;
+    }
+    &.asks {
       display: none;
     }
   }

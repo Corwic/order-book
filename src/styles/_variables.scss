@@ -3,7 +3,8 @@ $screen-narrow: 640px;
 $screen-wide: 1280px;
 
 // Colors
-$background-color: rgb(30, 37, 45);
+$background-color: rgb(16, 35, 49);
+$background-color-variant: rgba(18, 31, 39, 0.05);
 $graph-bids-color: rgb(39, 65, 54);
 $graph-asks-color: rgb(68, 49, 53);
 $text-color: rgb(255, 255, 255);
@@ -13,18 +14,19 @@ $text-color-variant: rgb(150, 155, 158);
 $data-sequence-bids: "count amount total price";
 $data-sequence-asks: "price total amount count";
 
-// Temp colors
-// $primary-color: 1, 167, 129;
-// $primary-color-variant: 1, 192, 149;
-// $secondary-color: 228, 75, 68;
-// $secondary-color-variant: 230, 94, 88;
-// $tertiary-color: 130, 186, 246;
-// $tertiary-color-variant: 143, 193, 246;
-// $background-color: 16, 35, 49;
-// $background-color-variant: 18, 31, 39;
-// $surface-color: 23, 45, 62;
-// $surface-color-variant: 42, 82, 114;
-// $on-surface-color: 40, 68, 91;
-// $on-surface-color-variant: 14, 52, 82;
-// $text-color: 255, 255, 255;
-// $text-color-variant: 150, 155, 158;
+
+// Bitfinex colors
+// $primary-color: rgb(1, 167, 129);
+// $primary-color-variant: rgb(1, 192, 149);
+// $secondary-color: rgb(228, 75, 68);
+// $secondary-color-variant: rgb(230, 94, 88);
+// $tertiary-color: rgb(130, 186, 246);
+// $tertiary-color-variant: rgb(143, 193, 246);
+// $background-color: rgb(16, 35, 49);
+// $background-color-variant: rgb(18, 31, 39);
+// $surface-color: rgb(23, 45, 62);
+// $surface-color-variant: rgb(42, 82, 114);
+// $on-surface-color: rgb(40, 68, 91);
+// $on-surface-color-variant: rgb(14, 52, 82);
+// $text-color: rgb(255, 255, 255);
+// $text-color-variant: rgb(150, 155, 158);

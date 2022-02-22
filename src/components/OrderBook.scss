@@ -1,20 +1,35 @@
 @import "../styles/global-imports";
 
 .table {
-  display: flex;
+  display: grid;
+  grid-template-areas: "bids asks";
   width: 640px;
   padding: 1rem;
   box-sizing: border-box;
   position:absolute;
 
   @include narrowBreakPoint {
-    flex-direction: column;
+    grid-template-areas: 
+      "asks"
+      "bids";
+    width: 320px;
   }
 }
 
 .table-half {
   flex-grow: 1;
   height: 445px;
-  //border: solid black 1px;
-  padding: 0 2px
+  padding: 0 2px;
+
+  &.bids {
+    grid-area: bids;
+  }
+
+  &.asks {
+    grid-area: asks;
+    @include narrowBreakPoint {
+      display: flex;
+      flex-direction: column-reverse; 
+    }
+  }
 }
