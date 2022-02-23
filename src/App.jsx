@@ -12,7 +12,7 @@ function App() {
 
   return (
     <div className="App">
-      {/* <DepthGraph book={book} /> */}
+      <DepthGraph book={book} />
       <OrderBookTable book={book} />
     </div>
   );

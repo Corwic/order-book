@@ -1,12 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./DepthGraph.scss";
 import "./OrderBook.scss";
 import * as d3 from "d3";
 
 export default function DepthGraph({ book }) {
+  const [depthMax, setDepthMax] = useState([0, 0]);
+
   useEffect(() => {
-    bids("bids", book);
-    asks("asks", book);
+    bids("bids", book, depthMax, setDepthMax);
+    asks("asks", book, depthMax, setDepthMax);
   }, [book]);
 
   return (
@@ -27,7 +29,7 @@ const outer = 1;
 const top = 16;
 const bottom = 0;
 
-function bids(id, { bids, bookMap }) {
+function bids(id, { bids, bookMap }, depthMax, setDepthMax = (f) => f) {
   const margin = { top, right: inner, bottom, left: outer };
   const width = widthmax - margin.left - margin.right;
   const height = heightmax - margin.top - margin.bottom;
@@ -84,7 +86,10 @@ function bids(id, { bids, bookMap }) {
   // Scale the range of the data in the domains
   x.domain([
     d3.max(data, function (d) {
-      return d.orders;
+      const [bids, asks] = depthMax;
+      if (d.orders > asks) setDepthMax([d.orders, asks]);
+      // setDepthMax([d.orders, asks]);
+      return bids || d.orders;
     }),
     0,
   ]);
@@ -116,7 +121,7 @@ function bids(id, { bids, bookMap }) {
     .attr("height", y.bandwidth());
 }
 
-function asks(id, { asks, bookMap }) {
+function asks(id, { asks, bookMap }, depthMax, setDepthMax = (f) => f) {
   const margin = { top, right: outer, bottom, left: inner };
   const width = widthmax - margin.left - margin.right;
   const height = heightmax - margin.top - margin.bottom;
@@ -173,7 +178,9 @@ function asks(id, { asks, bookMap }) {
   // Scale the range of the data in the domains
   x.domain([
     d3.max(data, function (d) {
-      return d.orders;
+      const [bids, asks] = depthMax;
+      if (d.orders > bids) setDepthMax([bids, d.orders]);
+      return asks;
     }),
     0,
   ]);

@@ -5,30 +5,17 @@ import HeaderRow from "./HeaderRow";
 import ListOrders from "./ListOrders";
 
 export default function OrderBookTable({ book }) {
-  const { bids, asks, bookMap, depth } = book;
-  const visibleBids = bids.slice(0, depth);
-  const visibleAsks = asks.slice(0, depth);
-  const sequence = "count amount total price";
+  const { bids, asks, bookMap } = book;
 
   return (
     <div className="table">
       <div className="table-half bids">
         <HeaderRow side="bids" />
-        <ListOrders
-          priceList={visibleBids}
-          bookMap={bookMap}
-          side="bids"
-          sequence={sequence}
-        />
+        <ListOrders priceList={bids} bookMap={bookMap} side="bids" />
       </div>
       <div className="table-half asks">
         <HeaderRow side="asks" />
-        <ListOrders
-          priceList={visibleAsks}
-          bookMap={bookMap}
-          side="asks"
-          sequence={sequence}
-        />
+        <ListOrders priceList={asks} bookMap={bookMap} side="asks" />
       </div>
     </div>
   );
