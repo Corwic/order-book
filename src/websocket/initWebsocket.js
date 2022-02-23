@@ -9,14 +9,13 @@ export default function initWebsocket() {
       channel: "book",
       symbol: "tBTCUSD",
     };
-    let torrent = 0;
     ws.onopen = () => ws.send(JSON.stringify(apiCall));
     ws.onmessage = (e) => {
       let msg = null;
       try {
         msg = JSON.parse(e.data);
-      } catch (e) {
-        console.log(`Error parsing : ${e.data}`);
+      } catch (err) {
+        console.log(`Error parsing : ${err.data}`);
       }
 
       if (!msg.length) {
@@ -30,22 +29,13 @@ export default function initWebsocket() {
         case data.length === 50:
           return emitter({ type: "fillIn", payload: data });
         case data === "hb":
-          // console.log('hb', msg[1]);
           break;
+        case data[1] === 0: // data = [price, count, amount]
+          // console.log(data);
+          return emitter({ type: "deleteOrder", payload: data });
         default:
-          torrent++;
-        // if (Number.isInteger(torrent / 1))
-        //   return emitter({ type: "addOne", payload: data });
-
-        // let [price, count, amount] = data
-        // let style = 'color: cyan'
-        // if (amount < 0) style = 'color: pink'
-        // torrent.push(data)
-        // console.log(torrent);
-        // console.log(`%c price ${price}, count ${count}, amount ${amount}`, style)
+          return emitter({ type: "addOrder", payload: data });
       }
-
-      // return emitter( { type: 'ACTION_TYPE', payload } )
     };
 
     return () => {
