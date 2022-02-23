@@ -1,14 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
-import bookReducer from "./bookSlice";
+import reducer from "./bookSlice";
 import websocketSagas from "./sagas";
 
 const sagaMiddleware = createSagaMiddleware();
 
 export default configureStore({
-  reducer: {
-    orderBook: bookReducer,
-  },
+  reducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(sagaMiddleware),
 });

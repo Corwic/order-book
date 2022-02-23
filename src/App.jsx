@@ -6,13 +6,13 @@ import OrderBookTable from "./components/OrderBook";
 import DepthGraph from "./components/DepthGraph";
 
 function App() {
-  const book = useSelector((state) => state.orderBook);
+  const book = useSelector((state) => state);
 
   if (!book.bids || !book.bids.length) return <Loading />;
 
   return (
     <div className="App">
-      <DepthGraph book={book} />
+      {/* <DepthGraph book={book} /> */}
       <OrderBookTable book={book} />
     </div>
   );
