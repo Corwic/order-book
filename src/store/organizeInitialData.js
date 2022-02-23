@@ -10,7 +10,6 @@ export default function organizeInitialData(orders) {
   while (i < ordersHalfLength) {
     const [bidPrice, bidCount, bidAmount] = orders[i];
     const [askPrice, askCount, askAmount] = orders[ordersHalfLength + i];
-    // console.log(i, "bid", orders[i][0], "ask", orders[ordersHalfLength + i][0]);
     bidTotal += bidAmount;
     askTotal += askAmount;
 
@@ -21,6 +20,5 @@ export default function organizeInitialData(orders) {
     i++;
   }
 
-  // asks.reverse();
   return { bookMap, bids, asks };
 }

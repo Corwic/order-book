@@ -6,8 +6,10 @@ function ListOrders({ priceList, bookMap, side }) {
 
   return priceList.map((orderPrice, index) => {
     if (!bookMap[orderPrice]) return <EmptyRow />;
+
     const [count, amount] = bookMap[orderPrice];
     total += amount;
+
     return (
       <OrderRow
         key={(orderPrice.toString() || 0) + index}

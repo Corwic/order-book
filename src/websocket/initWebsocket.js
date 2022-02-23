@@ -31,7 +31,6 @@ export default function initWebsocket() {
         case data === "hb":
           break;
         case data[1] === 0: // data = [price, count, amount]
-          // console.log(data);
           return emitter({ type: "deleteOrder", payload: data });
         default:
           return emitter({ type: "addOrder", payload: data });
