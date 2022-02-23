@@ -6,7 +6,7 @@
   width: 640px;
   padding: 1rem;
   box-sizing: border-box;
-  position:absolute;
+  position: absolute;
 
   @include narrowBreakPoint {
     grid-template-areas: 
@@ -19,7 +19,6 @@
 .table-half {
   flex-grow: 1;
   height: 445px;
-  padding: 0 2px;
 
   &.bids {
     grid-area: bids;

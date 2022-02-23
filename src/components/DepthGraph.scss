@@ -6,3 +6,16 @@
 .bar-asks {
   fill: $graph-asks-color; 
 }
+
+.depth-chart .table-half {
+  padding: 0 1px 0 1px;
+}
+
+
+@include narrowBreakPoint {
+  .depth-chart .table-half.asks {
+    svg {
+      transform: rotate(180deg) translateY(-17px);
+    }
+  }
+}

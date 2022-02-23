@@ -4,32 +4,35 @@ import "./OrderBook.scss";
 import * as d3 from "d3";
 
 export default function DepthGraph({ book }) {
-  const [depthMax, setDepthMax] = useState([0, 0]);
+  // const [depthMax, setDepthMax] = useState([0, 0]);
 
   useEffect(() => {
-    bids("bids", book, depthMax, setDepthMax);
-    asks("asks", book, depthMax, setDepthMax);
+    bids("bids", book /* depthMax, setDepthMax */);
+    asks("asks", book /* depthMax, setDepthMax */);
   }, [book]);
 
   return (
     <div className="table depth-chart">
-      <div id="bids" className="table-half bids" />
-      <div id="asks" className="table-half asks" />
+      <div id="bids" className="table-half depth-chart bids" />
+      <div id="asks" className="table-half depth-chart asks" />
     </div>
   );
 }
 
-// ==================================
-
 const widthmax = 304;
 const heightmax = 431;
 const barPadding = 0;
-const inner = 1;
-const outer = 1;
+const inner = 0;
+const outer = 0;
 const top = 16;
 const bottom = 0;
 
-function bids(id, { bids, bookMap }, depthMax, setDepthMax = (f) => f) {
+function bids(
+  id,
+  { bids, bookMap },
+  depthMax = [0, 0],
+  setDepthMax = (f) => f
+) {
   const margin = { top, right: inner, bottom, left: outer };
   const width = widthmax - margin.left - margin.right;
   const height = heightmax - margin.top - margin.bottom;
@@ -121,7 +124,12 @@ function bids(id, { bids, bookMap }, depthMax, setDepthMax = (f) => f) {
     .attr("height", y.bandwidth());
 }
 
-function asks(id, { asks, bookMap }, depthMax, setDepthMax = (f) => f) {
+function asks(
+  id,
+  { asks, bookMap },
+  depthMax = [0, 0],
+  setDepthMax = (f) => f
+) {
   const margin = { top, right: outer, bottom, left: inner };
   const width = widthmax - margin.left - margin.right;
   const height = heightmax - margin.top - margin.bottom;
@@ -180,7 +188,7 @@ function asks(id, { asks, bookMap }, depthMax, setDepthMax = (f) => f) {
     d3.max(data, function (d) {
       const [bids, asks] = depthMax;
       if (d.orders > bids) setDepthMax([bids, d.orders]);
-      return asks;
+      return asks || d.orders;
     }),
     0,
   ]);

@@ -4,12 +4,23 @@
   font-weight: bold;
   color: $text-color-variant;
   text-transform: uppercase;
+
+  &.narrow {
+    display: none;
+  }
+
   @include narrowBreakPoint {
     &.bids {
       visibility: hidden;
     }
     &.asks {
       display: none;
+    }
+    &.narrow {
+      display: grid;
+      position: absolute;
+      padding: 2rem 1.5rem 0;
+      visibility: visible;
     }
   }
 }

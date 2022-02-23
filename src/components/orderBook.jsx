@@ -8,7 +8,8 @@ export default function OrderBookTable({ book }) {
   const { bids, asks, bookMap } = book;
 
   return (
-    <div className="table">
+    <div className="table order-book">
+      <HeaderRow side="bids narrow" />
       <div className="table-half bids">
         <HeaderRow side="bids" />
         <ListOrders priceList={bids} bookMap={bookMap} side="bids" />
