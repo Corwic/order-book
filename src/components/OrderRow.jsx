@@ -1,23 +1,25 @@
 import React from "react";
 import "./OrderRow.scss";
 
-function OrderRow({ order, side }) {
-  const orderData = {
-    price: (order.price / 1000).toFixed(3),
-    count: order.count,
-    amount: Math.abs(order.amount).toFixed(4),
-    total: Math.abs(order.total).toFixed(4),
-  };
+export default function OrderRow({ order, side }) {
+  const [price, count, amount, total] = order;
 
   return (
     <div className={`row data ${side}`}>
-      {Object.keys(orderData).map((key, i) => (
-        <div key={key} className={key}>
-          {orderData[key]}
-        </div>
-      ))}
+      <div className="price">{fixedPrice(price)}</div>
+      <div className="amount">{fixedAmount(amount)}</div>
+      <div className="count">{count}</div>
+      <div className="total">{fixedTotal(total)}</div>
     </div>
   );
 }
 
-export default OrderRow;
+function fixedPrice(price) {
+  return (price / 1000).toFixed(3);
+}
+function fixedAmount(amount) {
+  return Math.abs(amount).toFixed(4);
+}
+function fixedTotal(total) {
+  return Math.abs(total).toFixed(4);
+}

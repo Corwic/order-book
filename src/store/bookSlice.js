@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createAction, createReducer, current } from "@reduxjs/toolkit";
+import { createSelector } from "reselect";
 import {
   isBidOrAsk,
   findIndexByPrice,
@@ -67,5 +68,25 @@ const bookReducer = createReducer(initialState, (builder) => {
       // }
     });
 });
+
+const selectBookMap = (state) => state.bookMap;
+const selectBids = (state) => state.bids;
+const selectAsks = (state) => state.asks;
+const selectOrderList = (state) => state;
+
+const selectType = (state, type) => type;
+const selectId = (state, itemId) => itemId;
+const selectAmount = (state, amount) => amount;
+const selectPrice = (state, price) => price;
+
+export const selectBookByType = createSelector(
+  [selectOrderList, selectType],
+  (orderList, type) => orderList[type]
+);
+
+export const selectOrderByPrice = createSelector(
+  [selectBookMap, selectPrice],
+  (bookMap, price) => bookMap[price]
+);
 
 export default bookReducer;
