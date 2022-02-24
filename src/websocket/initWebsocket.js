@@ -39,7 +39,6 @@ export default function initWebsocket() {
 
     return () => {
       console.log("Socket off");
-      // emitter(END)
     };
   });
 }

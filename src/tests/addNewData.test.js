@@ -1,35 +1,10 @@
 /* eslint-disable no-undef */
 import organizeInitialData from "../store/organizeInitialData";
 
-import { countNewTotal, findIndexForNewOrder } from "../store/addNewData";
+import { findIndexForNewOrder } from "../store/addNewData";
 import data from "./data";
 
-const { bookMap, bids, asks } = organizeInitialData(data);
-
-describe("countNewTotal", () => {
-  test("index = 0, total should be equal to the amount", () => {
-    const orderList = bids;
-    const desiredIndex = 0;
-    const newAmount = 0.987;
-
-    expect(countNewTotal(bookMap, orderList, newAmount, desiredIndex)).toBe(
-      0.987
-    );
-  });
-  test("index = 2, total should be 1.04714881", () => {
-    const orderList = bids;
-    const desiredIndex = 2;
-    const newAmount = 0.987;
-
-    const prevPriceInBook = orderList[desiredIndex - 1];
-    const prevTotal = bookMap[prevPriceInBook][2];
-    const expected = prevTotal + newAmount; // 1.04714881
-
-    expect(countNewTotal(bookMap, orderList, newAmount, desiredIndex)).toBe(
-      expected
-    );
-  });
-});
+const { bids, asks } = organizeInitialData(data);
 
 describe("findIndexForNewOrder", () => {
   test(`Find a right position in bids. Should be 4`, () => {

@@ -3,6 +3,9 @@ import "./OrderRow.scss";
 
 export default function OrderRow({ order, side }) {
   const [price, count, amount, total] = order;
+  const fixedPrice = (price) => (price / 1000).toFixed(3);
+  const fixedAmount = (amount) => Math.abs(amount).toFixed(4);
+  const fixedTotal = (total) => Math.abs(total).toFixed(4);
 
   return (
     <div className={`row data ${side}`}>
@@ -12,14 +15,4 @@ export default function OrderRow({ order, side }) {
       <div className="total">{fixedTotal(total)}</div>
     </div>
   );
-}
-
-function fixedPrice(price) {
-  return (price / 1000).toFixed(3);
-}
-function fixedAmount(amount) {
-  return Math.abs(amount).toFixed(4);
-}
-function fixedTotal(total) {
-  return Math.abs(total).toFixed(4);
 }

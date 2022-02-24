@@ -1,10 +1,11 @@
+/* eslint-disable func-names */
 import React, { useEffect, useState } from "react";
 import "./DepthGraph.scss";
 import "./OrderBook.scss";
 import * as d3 from "d3";
 
 export default function DepthGraph({ book }) {
-  // const [depthMax, setDepthMax] = useState([0, 0]);
+  // const [depthMax, setDepthMax] = useState([0, 0]); // the uproach doesn't seem to work
 
   useEffect(() => {
     bids("bids", book /* depthMax, setDepthMax */);
@@ -60,7 +61,6 @@ function bids(
   const cumData = [];
 
   // create cumulative data array
-  // console.log("__order_book bids", orderBook);
   for (var i = 0; i < bids.length; i++) {
     const amount = bookMap[bids[i]][1];
     cumData.push(amount);
@@ -74,9 +74,6 @@ function bids(
       orders: cum_data_array[i],
     });
   }
-
-  // reverse data for bids
-  // data = data.reverse();
 
   data.forEach(function (d) {
     d.orders = +d.orders;
@@ -158,7 +155,6 @@ function asks(
   const cumData = [];
 
   // get the data
-  // console.log("__order_book asks", orderBook);
   for (var i = 0; i < asks.length; i++) {
     const amount = -bookMap[asks[i]][1];
     cumData.push(amount);

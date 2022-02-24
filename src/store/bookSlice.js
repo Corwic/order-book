@@ -17,21 +17,8 @@ const initialState = {
   asks: [],
   bookMap: {},
   depth: 25,
-  toDelete: [],
+  // toDelete: [],
 };
-
-/* function Count() {
-  this.state = 0;
-  this.val = function () {
-    this.state += 1;
-    return this.state;
-  };
-}
-const counter = new Count();
-const logData = (state, amount, type, divider) => {
-  if (Number.isInteger(counter.val() / divider))
-    console.log(counter.val(), amount, type, current(state[type]));
-}; */
 
 const bookReducer = createReducer(initialState, (builder) => {
   builder
@@ -57,6 +44,7 @@ const bookReducer = createReducer(initialState, (builder) => {
       const index = findIndexByPrice(state[type], price);
       delete state.bookMap[price];
       state[type].splice(index, 1);
+
       // const list = state.toDelete;
       // logData(state, amount, type, 50);
       // list.push([price, type]);
@@ -70,13 +58,9 @@ const bookReducer = createReducer(initialState, (builder) => {
 });
 
 const selectBookMap = (state) => state.bookMap;
-const selectBids = (state) => state.bids;
-const selectAsks = (state) => state.asks;
 const selectOrderList = (state) => state;
 
 const selectType = (state, type) => type;
-const selectId = (state, itemId) => itemId;
-const selectAmount = (state, amount) => amount;
 const selectPrice = (state, price) => price;
 
 export const selectBookByType = createSelector(
